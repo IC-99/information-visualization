@@ -1,3 +1,9 @@
 .balloon {
     cursor: pointer;
 }
+
+svg {
+    display: block;
+    margin: auto;
+    border: solid black 2px;
+}
