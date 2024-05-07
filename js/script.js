@@ -91,7 +91,6 @@ d3.json("data.json")
           clickedIndex = data.indexOf(d);
           selectedBalloon.select("circle").transition().duration(300).attr("fill", function(d) { return d3.rgb(20, colorScale(d.x5) / 2, colorScale(d.x5)); });
           if (selectedIndex !== clickedIndex) {
-            selectedBalloon.select("circle").transition().duration(300).attr("fill", function(d) { return d3.rgb(20, colorScale(d.x5) / 2, colorScale(d.x5)); });
             const tempX3 = data[selectedIndex]["x3"];
             const tempX4 = data[selectedIndex]["x4"];
             data[selectedIndex]["x3"] = data[clickedIndex]["x3"];
