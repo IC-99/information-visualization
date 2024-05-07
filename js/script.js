@@ -1,3 +1,4 @@
+// visualization parameters
 const margin = 100;
 const width = 1000;
 const height = 800;
@@ -103,8 +104,8 @@ d3.json("data.json")
           selectedIndex = null;
           selectedBalloon = null;
         }
-        console.log(selectionActive);
-        console.log(selectedIndex);
+        console.log("selection active: " + selectionActive);
+        console.log("selected index: " + selectedIndex);
       });
     
     balloons.append("circle")
@@ -139,5 +140,5 @@ d3.json("data.json")
       .attr("fill", "brown");
   })
   .catch(function(error) {
-    console.log("errore nel caricamento del file JSON: " + error)
+    console.log("error loading JSON file: " + error)
   });
