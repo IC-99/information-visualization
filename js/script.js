@@ -32,7 +32,7 @@ d3.json("data.json")
 
     const minColorScale = d3.min(data, function(element){ return element["x5"] });
     const maxColorScale = d3.max(data, function(element){ return element["x5"] });
-    const colorScale = d3.scaleLinear().domain([minColorScale, maxColorScale]).range([50, 225]);
+    const colorScale = d3.scaleLinear().domain([minColorScale, maxColorScale]).range(["#99ffff", "#003366"]);
 
     var selectionActive = false;
     var selectedIndex = null;
@@ -48,7 +48,7 @@ d3.json("data.json")
         .attr("cx", function(d) { return xScale(d.x1); })
         .attr("cy", function(d) { return yScale(d.x2); })
         .attr("r", function(d) { return circleSizeScale(d.x3); })
-        .attr("fill", function(d) { return d3.rgb(20, colorScale(d.x5) / 2, colorScale(d.x5)); });
+        .attr("fill", function(d) { return colorScale(d.x5); });
 
       balloons.select(".lineLeft")
         .transition()
@@ -90,7 +90,7 @@ d3.json("data.json")
         }
         else {
           clickedIndex = data.indexOf(d);
-          selectedBalloon.select("circle").transition().duration(300).attr("fill", function(d) { return d3.rgb(20, colorScale(d.x5) / 2, colorScale(d.x5)); });
+          selectedBalloon.select("circle").transition().duration(300).attr("fill", function(d) { return colorScale(d.x5); });
           if (selectedIndex !== clickedIndex) {
             const tempX3 = data[selectedIndex]["x3"];
             const tempX4 = data[selectedIndex]["x4"];
@@ -112,7 +112,7 @@ d3.json("data.json")
       .attr("cx", function(d) { return xScale(d.x1); })
       .attr("cy", function(d) { return yScale(d.x2); })
       .attr("r", function(d) { return circleSizeScale(d.x3); })
-      .attr("fill", function(d) { return d3.rgb(20, colorScale(d.x5) / 2, colorScale(d.x5)); })
+      .attr("fill", function(d) { return colorScale(d.x5); })
       .attr("stroke-width", "2")
       .attr("stroke", "black");
 
@@ -137,7 +137,7 @@ d3.json("data.json")
       .attr("height", function(d) { return squareSizeScale(d.x4); })
       .attr("x", function(d) { return xScale(d.x1) - squareSizeScale(d.x4) / 2; })
       .attr("y", function(d) { return yScale(d.x2) + circleSizeScale(d.x3) + basketDistance; })
-      .attr("fill", "brown");
+      .attr("fill", "#4B0000");
   })
   .catch(function(error) {
     console.log("error loading JSON file: " + error)
