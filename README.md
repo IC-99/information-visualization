@@ -16,4 +16,4 @@ This repository contains a JavaScript project that visualizes hot air balloons o
 - css/style.css: CSS file containing styles for the SVG elements.
 
 ## Demo
-[demo](https://ivancarlini.bitbucket.io/articles/infovis/)
+[demo](https://ic-99.github.io/information-visualization/)
