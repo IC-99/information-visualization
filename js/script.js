@@ -1,5 +1,5 @@
 // visualization parameters
-const margin = 100;
+const margin = 110;
 const width = 1000;
 const height = 800;
 const balloonMinSize = 50;
@@ -14,9 +14,10 @@ d3.json("data.json")
       .attr("width", width + margin)
       .attr("height", height + margin);
 
+    // scales initialization
     const minXScale = d3.min(data, function(element){ return element["x1"] });
     const maxXScale = d3.max(data, function(element){ return element["x1"] });
-    const xScale = d3.scaleLinear().domain([minXScale, maxXScale]).range([margin, width - margin]);
+    const xScale = d3.scaleLinear().domain([minXScale, maxXScale]).range([margin, width]);
 
     const minYScale = d3.min(data, function(element){ return element["x2"] });
     const maxYScale = d3.max(data, function(element){ return element["x2"] });
@@ -32,24 +33,11 @@ d3.json("data.json")
 
     const minColorScale = d3.min(data, function(element){ return element["x5"] });
     const maxColorScale = d3.max(data, function(element){ return element["x5"] });
-    const colorScale = d3.scaleLinear().domain([minColorScale, maxColorScale]).range([50, 225]);
+    const colorScale = d3.scaleLinear().domain([minColorScale, maxColorScale]).range(["#4c9edc", "#11273b"]);
 
-    var selectionActive = false;
-    var selectedIndex = null;
-    var selectedBalloon = null;
-
-    function updateBalloons(newData) {
-      const balloons = svg.selectAll(".balloon")
-        .data(newData);
+    function updateBalloons() {
+      const balloons = svg.selectAll("g")
     
-      balloons.select("circle")
-        .transition()
-        .duration(1000)
-        .attr("cx", function(d) { return xScale(d.x1); })
-        .attr("cy", function(d) { return yScale(d.x2); })
-        .attr("r", function(d) { return circleSizeScale(d.x3); })
-        .attr("fill", function(d) { return d3.rgb(20, colorScale(d.x5) / 2, colorScale(d.x5)); });
-
       balloons.select(".lineLeft")
         .transition()
         .duration(1000)
@@ -65,6 +53,14 @@ d3.json("data.json")
         .attr("y1", function(d) { return yScale(d.x2); })
         .attr("x2", function(d) { return xScale(d.x1) + squareSizeScale(d.x4) / 2; })
         .attr("y2", function(d) { return yScale(d.x2) + circleSizeScale(d.x3) + basketDistance; });
+
+      balloons.select("circle")
+        .transition()
+        .duration(1000)
+        .attr("cx", function(d) { return xScale(d.x1); })
+        .attr("cy", function(d) { return yScale(d.x2); })
+        .attr("r", function(d) { return circleSizeScale(d.x3); })
+        .attr("fill", function(d) { return colorScale(d.x5); });
       
       balloons.select("rect")
         .transition()
@@ -75,47 +71,44 @@ d3.json("data.json")
         .attr("y", function(d) { return yScale(d.x2) + circleSizeScale(d.x3) + basketDistance; });
     }
 
-    const balloons = svg.selectAll(".balloon")
+    var selectedData = null;
+    var selectedBalloon = null;
+
+    const balloons = svg.selectAll("balloons")
       .data(data)
       .enter()
       .append("g")
       .attr("class", "balloon")
       .on("click", function(event, d) {
-        const clickedBalloon = d3.select(this);
-        if (!selectionActive) {
-          clickedBalloon.select("circle").transition().duration(300).attr("fill", "white");
-          selectionActive = true;
-          selectedIndex = data.indexOf(d)
-          selectedBalloon = clickedBalloon
+
+        if (selectedData == null) {
+          selectedBalloon = d3.select(this);
+          selectedBalloon.select("circle").attr("fill", "white");
+          selectedData = d;
         }
         else {
-          clickedIndex = data.indexOf(d);
-          selectedBalloon.select("circle").transition().duration(300).attr("fill", function(d) { return d3.rgb(20, colorScale(d.x5) / 2, colorScale(d.x5)); });
-          if (selectedIndex !== clickedIndex) {
-            const tempX3 = data[selectedIndex]["x3"];
-            const tempX4 = data[selectedIndex]["x4"];
-            data[selectedIndex]["x3"] = data[clickedIndex]["x3"];
-            data[selectedIndex]["x4"] = data[clickedIndex]["x4"];
-            data[clickedIndex]["x3"] = tempX3;
-            data[clickedIndex]["x4"] = tempX4;
-            updateBalloons(data);
+          if (d == selectedData) {
+            selectedBalloon.select("circle").attr("fill", function(d) { return colorScale(d.x5); });
+            selectedData = null;
+            selectedBalloon = null;
           }
-          selectionActive = false;
-          selectedIndex = null;
-          selectedBalloon = null;
+          else {
+            let tempX3 = selectedData["x3"];
+            let tempX4 = selectedData["x4"];
+            selectedData["x3"] = d["x3"];
+            selectedData["x4"] = d["x4"];
+            d["x3"] = tempX3;
+            d["x4"] = tempX4;
+            
+            updateBalloons();
+
+            selectedData = null;
+            selectedBalloon = null;
+          }
         }
-        console.log("selection active: " + selectionActive);
-        console.log("selected index: " + selectedIndex);
+        //console.log("selected index: " + data.indexOf(selectedData));
       });
     
-    balloons.append("circle")
-      .attr("cx", function(d) { return xScale(d.x1); })
-      .attr("cy", function(d) { return yScale(d.x2); })
-      .attr("r", function(d) { return circleSizeScale(d.x3); })
-      .attr("fill", function(d) { return d3.rgb(20, colorScale(d.x5) / 2, colorScale(d.x5)); })
-      .attr("stroke-width", "2")
-      .attr("stroke", "black");
-
     balloons.append("line")
       .attr("x1", function(d) { return xScale(d.x1) - circleSizeScale(d.x3); })
       .attr("y1", function(d) { return yScale(d.x2); })
@@ -131,6 +124,14 @@ d3.json("data.json")
       .attr("y2", function(d) { return yScale(d.x2) + circleSizeScale(d.x3) + basketDistance; })
       .attr("stroke", "black")
       .attr("class", "lineRight");
+
+    balloons.append("circle")
+      .attr("cx", function(d) { return xScale(d.x1); })
+      .attr("cy", function(d) { return yScale(d.x2); })
+      .attr("r", function(d) { return circleSizeScale(d.x3); })
+      .attr("fill", function(d) { return colorScale(d.x5); })
+      .attr("stroke-width", "2")
+      .attr("stroke", "black");
 
     balloons.append("rect")
       .attr("width", function(d) { return squareSizeScale(d.x4); })
