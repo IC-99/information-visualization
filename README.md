@@ -13,7 +13,7 @@ This repository contains a JavaScript project that visualizes hot air balloons o
 - index.html: HTML file containing the SVG canvas and script tags.
 - data.json: JSON file containing the multivariate dataset for hot air balloons.
 - js/script.js: JavaScript file containing the D3.js code for data visualization and interaction.
-- css/style.css: CSS file containing styles for the SVG elements.
+- css/style.css: CSS file containing styles for the index.html page.
 
 ## Demo
 [demo](https://ic-99.github.io/information-visualization/)
